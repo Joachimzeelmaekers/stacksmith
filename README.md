@@ -65,6 +65,29 @@ A lot of the benchmarking, structure and logging has been written using Cursor. 
 - **`src/go`**: Implementations in Go (1.22+).
 - **`01-...` to `20-...`**: Chapter notes and exercise descriptions.
 
+## Prerequisites
+
+To run Stacksmith locally, you’ll need a few basic tools installed. Nothing exotic.
+
+### Required
+
+Node.js (v20 or newer recommended)
+Used to run the CLI, the TypeScript implementations, and the benchmarks.
+👉 https://nodejs.org
+
+Go (v1.22 or newer)
+Required to compile and run the Go implementations.
+👉 https://go.dev/dl
+
+### Optional but Recommended
+
+The project uses Yarn for dependency management. If you don’t have it yet:
+
+`npm install -g yarn`
+
+A basic familiarity with JavaScript or TypeScript
+You don’t need to be a Go expert. The Go code is there to compare behavior and performance, not to test your Go knowledge. We're all here to learn.
+
 ## Exercises & Solutions
 
 | Chapter | Topic                          | Exercises                                                                                 | TypeScript                                           | Go                                                |
