@@ -1,0 +1,14 @@
+{
+  "name": "dsa-exercises",
+  "version": "1.0.0",
+  "description": "Data Structures and Algorithms exercises in TypeScript",
+  "type": "module",
+  "scripts": {
+    "ex": "npx tsx"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.5",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
+  }
+}

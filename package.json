@@ -1,0 +1,25 @@
+{
+  "name": "stacksmith",
+  "version": "1.0.0",
+  "description": "A workbench for mastering Data Structures and Algorithms in TypeScript and Go. Prove to yourself that O(N) matters.",
+  "type": "module",
+  "keywords": [
+    "dsa",
+    "algorithms",
+    "data-structures",
+    "typescript",
+    "go",
+    "benchmark",
+    "big-o"
+  ],
+  "scripts": {
+    "start": "npx tsx run.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "tsx": "^4.21.0",
+    "@clack/prompts": "^0.11.0",
+    "picocolors": "^1.1.1"
+  },
+  "license": "MIT"
+}
