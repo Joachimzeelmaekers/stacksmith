@@ -6,7 +6,7 @@ I built this repository to learn Data Structures and Algorithms (DSA), and added
 
 What I found was that while Go is faster at the raw execution level, a bad algorithm cripples _both_ languages equally. An O(N²) function kills your React app's responsiveness just as effectively as it kills a Go service.
 
-**Stacksmith** is a workbench for learning this by yourself. It contains 20 chapters of exercises, benchmarks, and notes (based on the book) that lets you race algorithms against each other. In a way, you get to see the results, before deciding to learn the boring stuff!
+**Stacksmith** is a workbench for learning this by yourself. It contains 20 chapters of exercises, benchmarks, and notes (based on A Common-Sense Guide to Data Structures and Algorithms, Second Edition: Level Up Your Core Programming Skills by Jay Wengrow) that lets you race algorithms against each other. In a way, you get to see the results, before deciding to learn the boring stuff!
 
 ## The Evidence
 
