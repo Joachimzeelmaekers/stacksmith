@@ -26,6 +26,29 @@ There are plenty of reasons to disregard this, and if you wish to do so, this re
 
 This repo comes with a CLI to run exercises and benchmarks (to compare "performance" of and in each language) instantly.
 
+### Option 1: Docker (Recommended)
+
+No local setup required - just Docker:
+
+```bash
+./docker-run.sh
+```
+
+Or manually:
+
+```bash
+docker build -t stacksmith .
+docker run -it --rm stacksmith
+```
+
+To use the KB Assistant feature with Docker, create a `.env` file first (see below), then run:
+
+```bash
+docker run -it --rm -v "$(pwd)/.env:/app/.env:ro" stacksmith
+```
+
+### Option 2: Local Setup
+
 ```bash
 yarn install
 yarn start
@@ -67,19 +90,20 @@ A lot of the benchmarking, structure and logging has been written using Cursor. 
 
 ## Prerequisites
 
-To run Stacksmith locally, you’ll need a few basic tools installed. Nothing exotic.
+### Using Docker (Easiest)
 
-### Required
+Just have Docker installed and run `./docker-run.sh`. Everything else is handled in the container.
 
-Node.js (v20 or newer recommended)
-Used to run the CLI, the TypeScript implementations, and the benchmarks.
-👉 https://nodejs.org
+### Running Locally
 
-Go (v1.22 or newer)
-Required to compile and run the Go implementations.
-👉 https://go.dev/dl
+To run Stacksmith locally, you'll need a few basic tools installed. Nothing exotic.
 
-### Optional but Recommended
+**Required:**
+
+- **Node.js** (v20 or newer) - Used to run the CLI and TypeScript implementations. 👉 https://nodejs.org
+- **Go** (v1.22 or newer) - Required for Go implementations. 👉 https://go.dev/dl
+
+**Optional but Recommended:**
 
 The project uses Yarn for dependency management. If you don’t have it yet:
 
