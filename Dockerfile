@@ -28,4 +28,5 @@ COPY . .
 ENV NODE_ENV=production
 
 # The CLI needs interactive TTY - run with: docker run -it
-ENTRYPOINT ["npx", "tsx", "run.ts"]
+# Use shell form to conditionally load .env file if present
+ENTRYPOINT ["/bin/sh", "-c", "if [ -f .env ]; then exec node --env-file=.env --import tsx run.ts; else exec npx tsx run.ts; fi"]

@@ -5,6 +5,15 @@ import { spawn } from "child_process";
 import { readdirSync, existsSync } from "fs";
 import { join } from "path";
 import color from "picocolors";
+import {
+  buildKnowledgeBase,
+  searchKnowledgeBase,
+  suggestOptimizationsFromCode,
+  buildKbPrompt,
+  getLlmConfigFromEnv,
+  callBaselineChatLlm,
+} from "./src/kb/assistant";
+import type { KnowledgeChunk, OptimizationSuggestion } from "./src/kb/types";
 
 const REPO_ROOT = process.cwd();
 const SRC_DIR = join(REPO_ROOT, "src");
@@ -472,6 +481,132 @@ async function showKbAssistant(): Promise<void> {
       `  ${color.cyan("•")} References to relevant course material`,
     "🧠 KB Assistant"
   );
+  console.log("");
+
+  const codeInput = await clack.text({
+    message: "Paste your code snippet (end with an empty line):",
+    placeholder: "function example() { ... }",
+    validate(value) {
+      if (!value.trim()) {
+        return "Please provide a code snippet";
+      }
+    },
+  });
+
+  if (clack.isCancel(codeInput)) {
+    return;
+  }
+
+  const code = codeInput.trim();
+
+  const questionInput = await clack.text({
+    message: "What would you like to know? (optional - press Enter to skip):",
+    placeholder: "How can I optimize this?",
+  });
+
+  if (clack.isCancel(questionInput)) {
+    return;
+  }
+
+  const question =
+    questionInput?.trim() || "How can I optimize this code using DSA concepts?";
+
+  const spinner = clack.spinner();
+  spinner.start("Analyzing your code...");
+
+  // Pattern-based suggestions (fast, no LLM needed)
+  const patternSuggestions: OptimizationSuggestion[] =
+    suggestOptimizationsFromCode(code);
+
+  // Build and search knowledge base
+  let knowledgeBase: KnowledgeChunk[] = [];
+  try {
+    knowledgeBase = buildKnowledgeBase(REPO_ROOT);
+  } catch {
+    // Knowledge base building failed, continue without it
+  }
+
+  const searchQuery = `${question} ${code}`;
+  const hits = searchKnowledgeBase(knowledgeBase, searchQuery, { topK: 6 });
+
+  spinner.stop("Analysis complete");
+
+  // Show pattern-based suggestions
+  if (patternSuggestions.length > 0) {
+    console.log("");
+    clack.log.info(color.bold("Pattern-based suggestions:"));
+    for (const suggestion of patternSuggestions) {
+      console.log("");
+      console.log(`  ${color.yellow("→")} ${color.bold(suggestion.title)}`);
+      console.log(`    ${color.dim(suggestion.explanation)}`);
+      if (suggestion.relatedConcepts.length > 0) {
+        console.log(
+          `    ${color.cyan("Concepts:")} ${suggestion.relatedConcepts.join(", ")}`
+        );
+      }
+    }
+  }
+
+  // Show relevant KB hits
+  if (hits.length > 0) {
+    console.log("");
+    clack.log.info(color.bold("Relevant course material:"));
+    for (const hit of hits.slice(0, 3)) {
+      console.log("");
+      console.log(`  ${color.green("📄")} ${color.bold(hit.title)}`);
+      console.log(`    ${color.dim(`Source: ${hit.sourcePath}`)}`);
+      const preview =
+        hit.content.length > 150
+          ? hit.content.slice(0, 150) + "..."
+          : hit.content;
+      console.log(`    ${preview.replace(/\n/g, " ")}`);
+    }
+  }
+
+  // Try LLM analysis if configured
+  const llmConfig = getLlmConfigFromEnv(process.env as { LLM_API_KEY: string });
+
+  if (llmConfig) {
+    console.log("");
+    const useLlm = await clack.confirm({
+      message: "Would you like deeper AI-powered analysis?",
+      initialValue: true,
+    });
+
+    if (clack.isCancel(useLlm)) {
+      return;
+    }
+
+    if (useLlm) {
+      const llmSpinner = clack.spinner();
+      llmSpinner.start(`Consulting ${llmConfig.model}...`);
+
+      try {
+        const { system, user } = buildKbPrompt({ question, code, hits });
+        const response = await callBaselineChatLlm({
+          config: llmConfig,
+          system,
+          user,
+        });
+
+        llmSpinner.stop("AI analysis complete");
+        console.log("");
+        clack.note(response, "🤖 AI Analysis");
+      } catch (error) {
+        llmSpinner.stop("AI analysis failed");
+        const message = error instanceof Error ? error.message : String(error);
+        clack.log.error(`LLM request failed: ${message}`);
+      }
+    }
+  } else if (patternSuggestions.length === 0 && hits.length === 0) {
+    console.log("");
+    clack.log.info(
+      color.dim(
+        "Tip: Set LLM_API_KEY in your environment for AI-powered analysis"
+      )
+    );
+  }
+
   console.log("");
 }
 

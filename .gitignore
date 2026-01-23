@@ -3,3 +3,4 @@ node_modules
 
 dist
 book.pdf
+settings.local.json

@@ -13,7 +13,7 @@
     "big-o"
   ],
   "scripts": {
-    "start": "npx tsx run.ts"
+    "start": "sh -c 'if [ -f .env ]; then node --env-file=.env --import tsx run.ts; else npx tsx run.ts; fi'"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",
